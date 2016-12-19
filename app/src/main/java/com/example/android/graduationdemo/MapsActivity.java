@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android.graduationdemo.Firebase.FirebaseHandler;
+import com.example.android.graduationdemo.callbacks.GetLocationData;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -17,9 +19,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback {
+public class MapsActivity extends Fragment implements OnMapReadyCallback, GetLocationData{
 
     private GoogleMap mMap;
+    private String mLat, mLong;
 
 
     @Nullable
@@ -49,6 +52,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        FirebaseHandler.getEmergencyLocation(this);
+
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         UiSettings uiSettings = mMap.getUiSettings();
@@ -58,6 +64,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         LatLng car2 = new LatLng(29.9532644,30.9134779);
         LatLng car3 = new LatLng(29.9555664,30.9174799);
         LatLng case1 = new LatLng(29.955388,30.9146463);
+        String lattest = mLat;
+        String longtest = mLong;
+       // LatLng case2 = new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLong));
         BitmapDescriptor patient = BitmapDescriptorFactory.fromResource(R.drawable.patient);
         BitmapDescriptor badAmbulances = BitmapDescriptorFactory.fromResource(R.drawable.badambulance);
         BitmapDescriptor goodAmbulance = BitmapDescriptorFactory.fromResource(R.drawable.goodambulance);
@@ -73,10 +82,19 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
 
 
+
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
+
+    @Override
+    public void getLocationData(EmergencyLocation emergencyLocation) {
+        mLat = emergencyLocation.getLatPosition();
+        mLong = emergencyLocation.getLongPosition();
+        LatLng case2 = new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLong));
+        mMap.addMarker(new MarkerOptions().position(case2).title("My Case").icon(BitmapDescriptorFactory.fromResource(R.drawable.patient)));
+    }
 }

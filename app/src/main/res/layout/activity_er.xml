@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
-    tools:context="com.example.android.graduationdemo.ERActivity">
+    tools:context="com.example.android.graduationdemo.controller.ERActivity">
 
 
     <Button

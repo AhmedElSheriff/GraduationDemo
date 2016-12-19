@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.example.android.graduationdemo.Backoffice">
+    tools:context="com.example.android.graduationdemo.controller.Backoffice">
 
     <FrameLayout
     android:layout_width="match_parent"

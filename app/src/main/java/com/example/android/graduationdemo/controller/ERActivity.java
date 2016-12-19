@@ -1,4 +1,4 @@
-package com.example.android.graduationdemo;
+package com.example.android.graduationdemo.controller;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,18 +14,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.example.android.graduationdemo.EmergencyLocation;
+import com.example.android.graduationdemo.Firebase.FirebaseHandler;
+import com.example.android.graduationdemo.Firebase.FirebaseHelper;
+import com.example.android.graduationdemo.R;
+import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.HashMap;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ERActivity extends AppCompatActivity{
@@ -109,27 +108,6 @@ public class ERActivity extends AppCompatActivity{
 
     }
 
-    private void addLocationToFB(final String lat, final String lng)
-    {
-
-        Log.d("thirdLat",mLat);
-        Log.d("thirdLng",mLong);
-        FirebaseHelper.getDatabase().getReference().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String,String> map = new HashMap<String, String>();
-                    map.put("Latitude", lat);
-                    map.put("Longtitude", lng);
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -138,15 +116,20 @@ public class ERActivity extends AppCompatActivity{
         public void onLocationChanged(final Location location) {
             textView = (TextView) findViewById(R.id.testtxtview);
             textView.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-            mLat = Double.toString(location.getLatitude());
-            mLong = Double.toString(location.getLongitude());
-            Log.d("firstLat",mLat);
-            Log.d("firstLng",mLong);
-            if(!mLat.equals("") && !mLong.equals("")) {
-                Log.d("secondLat",mLat);
-                Log.d("secondLng",mLong);
-                addLocationToFB(mLat, mLong);
-            }
+            EmergencyLocation emergencyLocation = new EmergencyLocation();
+            emergencyLocation.setLatPosition(Double.toString(location.getLatitude()));
+            emergencyLocation.setLongPosition(Double.toString(location.getLongitude()));
+            FirebaseHandler.addNewEmergency(emergencyLocation, new AddLatLng() {
+                @Override
+                public void onAdded() {
+                    Toast.makeText(getApplicationContext(),"Added successfuly",Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailed(String exception) {
+                    Toast.makeText(getApplicationContext(),"Faild to add",Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
         @Override

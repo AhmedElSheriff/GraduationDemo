@@ -1,5 +1,6 @@
-package com.example.android.graduationdemo;
+package com.example.android.graduationdemo.Firebase;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
@@ -9,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class FirebaseHelper {
 
     private static FirebaseDatabase mDatabase;
+    private static DatabaseReference mDatabaseRef;
     /**
      * Create a new Database instance if first time initialization and setPersistence to cash our data offline .
      * @return our Firebase database instance .
@@ -20,4 +22,5 @@ public class FirebaseHelper {
         }
         return mDatabase;
     }
+
 }
