@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "509611521955",
+    "firebase_url": "https://emergency-dispatch-service.firebaseio.com",
+    "project_id": "emergency-dispatch-service",
+    "storage_bucket": "emergency-dispatch-service.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509611521955:android:8747c79ed59e248c",
+        "android_client_info": {
+          "package_name": "com.example.android.graduationdemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509611521955-srfcrvblvnkvkjuk1n7bssj6nrkm85g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAaIXqHruH_1H8IbXxKQs7QKpjqDnm0Zo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

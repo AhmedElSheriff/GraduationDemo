@@ -1,5 +1,6 @@
 package com.example.android.graduationdemo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,10 +14,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ERActivity extends AppCompatActivity{
@@ -25,8 +34,12 @@ public class ERActivity extends AppCompatActivity{
     LocationManager mLocationManager;
     Button mAddEr;
     TextView textView;
-    private static final int INITIAL_REQUEST=1337;
-    private static final int CAMERA_REQUEST=INITIAL_REQUEST+1;
+    private static final int INITIAL_REQUEST = 1337;
+    private static final int CAMERA_REQUEST = INITIAL_REQUEST + 1;
+    private String mLat = "";
+    private String mLong = "";
+    private ProgressDialog mProgressDialog;
+    private FirebaseDatabase mFirebase;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -44,6 +57,10 @@ public class ERActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_er);
 
+        mFirebase = FirebaseHelper.getDatabase();
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Please Wait");
+
 
         mAddEr = (Button) findViewById(R.id.add_request_btn);
         mAddEr.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +71,8 @@ public class ERActivity extends AppCompatActivity{
                 } catch (Settings.SettingNotFoundException e) {
                     e.printStackTrace();
                 }
+
+
             }
         });
 
@@ -87,14 +106,48 @@ public class ERActivity extends AppCompatActivity{
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
 
+
+    }
+
+    private void addLocationToFB(final String lat, final String lng)
+    {
+
+        Log.d("thirdLat",mLat);
+        Log.d("thirdLng",mLong);
+        FirebaseHelper.getDatabase().getReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String,String> map = new HashMap<String, String>();
+                    map.put("Latitude", lat);
+                    map.put("Longtitude", lng);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
     private final LocationListener mLocationListener = new LocationListener() {
+
         @Override
         public void onLocationChanged(final Location location) {
             textView = (TextView) findViewById(R.id.testtxtview);
             textView.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+            mLat = Double.toString(location.getLatitude());
+            mLong = Double.toString(location.getLongitude());
+            Log.d("firstLat",mLat);
+            Log.d("firstLng",mLong);
+            if(!mLat.equals("") && !mLong.equals("")) {
+                Log.d("secondLat",mLat);
+                Log.d("secondLng",mLong);
+                addLocationToFB(mLat, mLong);
+            }
+
         }
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
