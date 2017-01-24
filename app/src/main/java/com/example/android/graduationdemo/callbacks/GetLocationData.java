@@ -1,6 +1,6 @@
 package com.example.android.graduationdemo.callbacks;
 
-import com.example.android.graduationdemo.EmergencyLocation;
+import com.example.android.graduationdemo.data.EmergencyLocation;
 
 /**
  * Created by Abshafi on 12/19/2016.

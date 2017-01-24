@@ -3,7 +3,8 @@ package com.example.android.graduationdemo.Firebase;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.android.graduationdemo.EmergencyLocation;
+import com.example.android.graduationdemo.data.EmergencyLocation;
+import com.example.android.graduationdemo.data.PendingRequests;
 import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.example.android.graduationdemo.callbacks.GetLocationData;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +25,7 @@ public class FirebaseHandler {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
                     Log.v("Status", "Added successfuly");
+                    listener.onAdded();
                 }
                 else
                     listener.onFailed(task.getException().getMessage());
@@ -31,6 +33,20 @@ public class FirebaseHandler {
         });
     }
 
+    public static void addNewRequest(final PendingRequests request, final AddLatLng listener)
+    {
+        FirebaseHelper.getDatabase().getReference().child("PendingRequests").setValue(request).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.v("Status", "Added successfuly");
+                    listener.onAdded();
+                }
+                else
+                    listener.onFailed(task.getException().getMessage());
+            }
+        });
+    }
     public static void getEmergencyLocation(final GetLocationData listener)
     {
         FirebaseHelper.getDatabase().getReference("Emergency Locations").child("userName").addValueEventListener(new ValueEventListener() {

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.android.graduationdemo.Firebase.FirebaseHandler;
 import com.example.android.graduationdemo.callbacks.GetLocationData;
+import com.example.android.graduationdemo.data.EmergencyLocation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -17,12 +18,15 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback, GetLocationData{
 
     private GoogleMap mMap;
     private String mLat, mLong;
+    private Marker marker = null;
+
 
 
     @Nullable
@@ -83,6 +87,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, GetLoc
 
 
 
+
+
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -92,9 +98,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, GetLoc
 
     @Override
     public void getLocationData(EmergencyLocation emergencyLocation) {
+
         mLat = emergencyLocation.getLatPosition();
         mLong = emergencyLocation.getLongPosition();
         LatLng case2 = new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLong));
-        mMap.addMarker(new MarkerOptions().position(case2).title("My Case").icon(BitmapDescriptorFactory.fromResource(R.drawable.patient)));
+        if (marker!=null) {
+            marker.remove();
+            marker=null;
+        }
+
+        if (marker==null) {
+            marker = mMap.addMarker(new MarkerOptions().position(case2).title("My Case").icon(BitmapDescriptorFactory.fromResource(R.drawable.patient)));
+        }
     }
 }

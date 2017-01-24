@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.graduationdemo.EmergencyLocation;
+import com.example.android.graduationdemo.data.EmergencyLocation;
 import com.example.android.graduationdemo.Firebase.FirebaseHandler;
 import com.example.android.graduationdemo.Firebase.FirebaseHelper;
 import com.example.android.graduationdemo.R;
@@ -59,6 +59,7 @@ public class ERActivity extends AppCompatActivity{
         mFirebase = FirebaseHelper.getDatabase();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Please Wait");
+        mProgressDialog.setCancelable(false);
 
 
         mAddEr = (Button) findViewById(R.id.add_request_btn);
@@ -70,6 +71,7 @@ public class ERActivity extends AppCompatActivity{
                 } catch (Settings.SettingNotFoundException e) {
                     e.printStackTrace();
                 }
+
 
 
             }
@@ -89,7 +91,8 @@ public class ERActivity extends AppCompatActivity{
 
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -104,6 +107,7 @@ public class ERActivity extends AppCompatActivity{
 
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        mProgressDialog.show();
 
 
     }
@@ -122,12 +126,16 @@ public class ERActivity extends AppCompatActivity{
             FirebaseHandler.addNewEmergency(emergencyLocation, new AddLatLng() {
                 @Override
                 public void onAdded() {
-                    Toast.makeText(getApplicationContext(),"Added successfuly",Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
+
+//                    Toast.makeText(getApplicationContext(),"Added successfuly",Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailed(String exception) {
                     Toast.makeText(getApplicationContext(),"Faild to add",Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
+
                 }
             });
 
