@@ -10,11 +10,9 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,11 +22,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.graduationdemo.Firebase.FirebaseHandler;
-import com.example.android.graduationdemo.data.PendingRequests;
 import com.example.android.graduationdemo.R;
-import com.example.android.graduationdemo.utilities.Utilites;
 import com.example.android.graduationdemo.callbacks.AddLatLng;
+import com.example.android.graduationdemo.data.PendingRequests;
+import com.example.android.graduationdemo.utilities.Utilites;
 import com.example.android.graduationdemo.view.MyEditText;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class RequestAmbulance extends AppCompatActivity {
 
@@ -43,6 +42,7 @@ public class RequestAmbulance extends AppCompatActivity {
     private String mNumberOfInjs;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private Context context;
+    private String userEmail;
     private static final String[] INITIAL_PERMS = {
 
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -60,6 +60,7 @@ public class RequestAmbulance extends AppCompatActivity {
 
         numberOfInjsEditText = (MyEditText) findViewById(R.id.injuriesInput);
 
+        userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
 
         imageView = (ImageView) findViewById(R.id.imageview);
         mAttachPhoto = (Button) findViewById(R.id.attachbtn);
@@ -73,7 +74,6 @@ public class RequestAmbulance extends AppCompatActivity {
 
         sendRequestBtn = (Button) findViewById(R.id.send_btn);
         sendRequestBtn.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
                 try {
@@ -87,7 +87,6 @@ public class RequestAmbulance extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
@@ -114,7 +113,6 @@ public class RequestAmbulance extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void getLocation() throws Settings.SettingNotFoundException {
 
         mNumberOfInjs = numberOfInjsEditText.getText().toString();
@@ -132,7 +130,6 @@ public class RequestAmbulance extends AppCompatActivity {
 
         }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestLocation()
     {
 
@@ -156,7 +153,7 @@ public class RequestAmbulance extends AppCompatActivity {
             request.setLatPosition(Double.toString(location.getLatitude()));
             request.setLongPosition(Double.toString(location.getLongitude()));
             request.setNumberOfInjuries(mNumberOfInjs);
-            FirebaseHandler.addNewRequest(request, new AddLatLng() {
+            FirebaseHandler.addNewRequest(request, userEmail,new AddLatLng() {
                 @Override
                 public void onAdded() {
                     Toast.makeText(getApplicationContext(),"Added successfuly",Toast.LENGTH_SHORT).show();

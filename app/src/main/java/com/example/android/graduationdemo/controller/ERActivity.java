@@ -1,5 +1,6 @@
 package com.example.android.graduationdemo.controller;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -26,7 +26,6 @@ import com.example.android.graduationdemo.R;
 import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.google.firebase.database.FirebaseDatabase;
 
-@RequiresApi(api = Build.VERSION_CODES.M)
 public class ERActivity extends AppCompatActivity{
 
 
@@ -50,7 +49,6 @@ public class ERActivity extends AppCompatActivity{
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
     };
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +78,7 @@ public class ERActivity extends AppCompatActivity{
 
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private void getLocation() throws Settings.SettingNotFoundException {
 
         int off = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
