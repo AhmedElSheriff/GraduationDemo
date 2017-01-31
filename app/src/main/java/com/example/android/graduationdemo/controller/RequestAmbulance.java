@@ -27,7 +27,10 @@ import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.example.android.graduationdemo.data.PendingRequests;
 import com.example.android.graduationdemo.utilities.Utilites;
 import com.example.android.graduationdemo.view.MyEditText;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RequestAmbulance extends AppCompatActivity {
 
@@ -43,6 +46,7 @@ public class RequestAmbulance extends AppCompatActivity {
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private Context context;
     private String userEmail;
+    private FirebaseDatabase officeDatabase;
     private static final String[] INITIAL_PERMS = {
 
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -58,6 +62,13 @@ public class RequestAmbulance extends AppCompatActivity {
         mProgressDialog.setMessage("Please Wait");
         mProgressDialog.setCancelable(false);
 
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setApiKey("AIzaSyD_uP0uvHY6SCz9yQUZmx8Kbc7uF7vGgp0")
+                .setApplicationId("er-123-office")
+                .setDatabaseUrl("https://er-123-office.firebaseio.com")
+                .build();
+        FirebaseApp officeApp = FirebaseApp.initializeApp(this,options,"Office App");
+        officeDatabase = FirebaseDatabase.getInstance(officeApp);
         numberOfInjsEditText = (MyEditText) findViewById(R.id.injuriesInput);
 
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
@@ -167,7 +178,7 @@ public class RequestAmbulance extends AppCompatActivity {
                 }
 
 
-            });
+            },officeDatabase);
             if (ActivityCompat.checkSelfPermission(RequestAmbulance.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(RequestAmbulance.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 

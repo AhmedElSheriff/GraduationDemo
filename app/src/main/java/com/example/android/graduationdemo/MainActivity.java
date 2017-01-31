@@ -2,13 +2,20 @@ package com.example.android.graduationdemo;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.android.graduationdemo.Firebase.FirebaseHandler;
+import com.example.android.graduationdemo.callbacks.AddUserImage;
+import com.example.android.graduationdemo.callbacks.CheckImageExistance;
 import com.example.android.graduationdemo.callbacks.GetLocationData;
 import com.example.android.graduationdemo.callbacks.GetUserData;
 import com.example.android.graduationdemo.controller.RequestAmbulance;
@@ -30,6 +37,10 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GetLocationData, GetUserData {
 
@@ -45,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private AccountHeader header;
     private ProfileDrawerItem profileDrawerItem;
     private Drawer result;
+    private static final int GALLERY_REQUEST = 1123;
+    private Uri imageUri = null;
+
 
 
     @Override
@@ -62,9 +76,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+                Log.e("CustomApplication",uri.toString());
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                Picasso.with(imageView.getContext()).cancelRequest(imageView);
+            }
+        });
+
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Loading");
-
+        mProgressDialog.setCancelable(false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -73,17 +100,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         profileDrawerItem = new ProfileDrawerItem();
 
         Intent intent = getIntent();
-        userEmail = intent.getStringExtra("userEmail");
-        getUserInfo(userEmail);
+        userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        getUserInfo();
 
         //Call MAP
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
         header = new AccountHeaderBuilder()
                 .withActivity(this)
+                .withSelectionListEnabledForSingleProfile(false)
                 .withHeaderBackground(R.drawable.header)
+                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
+                    @Override
+                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+
+                        openGallary();
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+                        openGallary();
+                        return true;
+                    }
+                })
                         .build();
 
         PrimaryDrawerItem requestAmbulance = new PrimaryDrawerItem().withIdentifier(1).withName("Request Ambulance").withIcon(R.drawable.requestambulance);
@@ -198,20 +242,94 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void getUserInfo(String userEmail)
+    private void getUserInfo()
     {
-        if (!userEmail.equals(""))
-        {
+
+
             mProgressDialog.show();
+        Log.e("TAGKEY","Inside GET USER INFO");
+        Log.e("TAGKEY",userEmail);
             FirebaseHandler.getUserInfo(userEmail,this);
-        }
+
+            mProgressDialog.dismiss();
     }
 
     @Override
     public void getUserData(User user) {
+        Log.e("TAGKEY","Inside GET USER DATA");
+        Log.e("TAGKEY","Inside GET USER DATA" + user.getUserEmail());
 
+        profileDrawerItem.withName(user.getUserName()).withEmail(user.getUserEmail());
+
+        FirebaseHandler.checkIfUserHasImage(userEmail, new CheckImageExistance() {
+            @Override
+            public void checkImageExistance(boolean isFound, String URL) {
+                if(isFound)
+                {
+                    Log.e("TAGKEY","IMAGE IS FOUND");
+                    Uri uri = Uri.parse(URL);
+                    Log.e("ImageURL",URL);
+                    header.addProfiles(profileDrawerItem.withIcon(uri));
+                }
+                else
+                {
+                    Log.e("TAGKEY","IMAGE NOT FOUND");
+                    header.addProfiles(profileDrawerItem.withIcon(R.drawable.ahmedelsherif));
+                }
+            }
+        });
         userName = user.getUserName();
-        header.addProfiles(profileDrawerItem.withName(userName).withEmail(userEmail).withIcon(R.drawable.ahmedelsherif));
-        mProgressDialog.dismiss();
+        //header.addProfiles(profileDrawerItem.withName(user.getUserName()).withEmail(user.getUserEmail())
+        //.withIcon(R.drawable.ahmedelsherif));
+
+
+//        FirebaseHandler.getUserImageFromDatabase(new GetUserImage() {
+//            @Override
+//            public void getImage(URL url) {
+//                header.addProfiles(profileDrawerItem.withName(userName).withEmail(userEmail)
+//                        .withIcon("https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Smiley.svg/800px-Smiley.svg.png"));
+//            }
+//        });
+
+    }
+
+    private void openGallary()
+    {
+        Intent gallaryIntent = new Intent();
+        gallaryIntent.setAction(Intent.ACTION_GET_CONTENT);
+        gallaryIntent.setType("image/*");
+        startActivityForResult(gallaryIntent,GALLERY_REQUEST);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK)
+        {
+            Log.e("onActivityResult","YES");
+            imageUri = data.getData();
+            mProgressDialog.show();
+            //header.updateProfile(profileDrawerItem.withIcon(imageUri));
+            FirebaseHandler.addUserImageToDatabase(imageUri, new AddUserImage() {
+                @Override
+                public void addUserImage(boolean bool) {
+                    if(bool){
+                        mProgressDialog.dismiss();
+                        header.clear();
+                        header.addProfiles(profileDrawerItem.withIcon(imageUri));
+                        Toast.makeText(MainActivity.this, "Added Successfully",Toast.LENGTH_SHORT).show();
+
+                    }
+                    else{
+                        mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Try again later",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }
+
     }
 }

@@ -113,6 +113,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:weightSum="3"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -132,7 +133,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="2">
 
                         <com.example.android.graduationdemo.view.MyEditText
                             android:id="@+id/phone_number_sign_up"

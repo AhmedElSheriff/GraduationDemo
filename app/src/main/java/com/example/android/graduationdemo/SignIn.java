@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.example.android.graduationdemo.Firebase.FirebaseHandler;
 import com.example.android.graduationdemo.callbacks.LoginCallBack;
-import com.example.android.graduationdemo.callbacks.UserAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignIn extends AppCompatActivity {
@@ -36,25 +35,26 @@ public class SignIn extends AppCompatActivity {
         if(FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
 
-            mProgressDialog.show();
-            FirebaseHandler.checkIfUserAvailable(FirebaseAuth.getInstance().getCurrentUser().getEmail(), new UserAvailability() {
-                @Override
-                public void onSearchComplete(boolean isFounded) {
-                    if(isFounded)
-                    {
-                        mProgressDialog.dismiss();
-                        Intent intent = new Intent(SignIn.this,MainActivity.class);
-                        intent.putExtra("userEmail",FirebaseAuth.getInstance().getCurrentUser().getEmail());
-                        SignIn.this.finish();
-                        startActivity(intent);
-                    }
-                    else
-                    {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(SignIn.this,"Not Founded",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+//            mProgressDialog.show();
+//            FirebaseHandler.checkIfUserAvailable(FirebaseAuth.getInstance().getCurrentUser().getEmail(), new UserAvailability() {
+//                @Override
+//                public void onSearchComplete(boolean isFounded) {
+//                    if(isFounded)
+//                    {
+//                        mProgressDialog.dismiss();
+//                        Intent intent = new Intent(SignIn.this,MainActivity.class);
+//                        intent.putExtra("userEmail",FirebaseAuth.getInstance().getCurrentUser().getEmail());
+//                        SignIn.this.finish();
+//                        startActivity(intent);
+//                    }
+//                    else
+//                    {
+//                        mProgressDialog.dismiss();
+//                        Toast.makeText(SignIn.this,"Not Found",Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            });
+            startActivity(new Intent(SignIn.this,MainActivity.class));
         }
 
         setContentView(R.layout.activity_sign_in);
