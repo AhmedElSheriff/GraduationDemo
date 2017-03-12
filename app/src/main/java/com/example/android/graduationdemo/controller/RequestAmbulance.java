@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,10 +28,7 @@ import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.example.android.graduationdemo.data.PendingRequests;
 import com.example.android.graduationdemo.utilities.Utilites;
 import com.example.android.graduationdemo.view.MyEditText;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class RequestAmbulance extends AppCompatActivity {
 
@@ -46,7 +44,7 @@ public class RequestAmbulance extends AppCompatActivity {
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private Context context;
     private String userEmail;
-    private FirebaseDatabase officeDatabase;
+    private static final int REQUEST_LOCATION = 0x2;
     private static final String[] INITIAL_PERMS = {
 
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -62,13 +60,7 @@ public class RequestAmbulance extends AppCompatActivity {
         mProgressDialog.setMessage("Please Wait");
         mProgressDialog.setCancelable(false);
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setApiKey("AIzaSyD_uP0uvHY6SCz9yQUZmx8Kbc7uF7vGgp0")
-                .setApplicationId("er-123-office")
-                .setDatabaseUrl("https://er-123-office.firebaseio.com")
-                .build();
-        FirebaseApp officeApp = FirebaseApp.initializeApp(this,options,"Office App");
-        officeDatabase = FirebaseDatabase.getInstance(officeApp);
+
         numberOfInjsEditText = (MyEditText) findViewById(R.id.injuriesInput);
 
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
@@ -88,9 +80,11 @@ public class RequestAmbulance extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    Log.e("LOGTAG","Send Request TRY");
                     getLocation();
                 } catch (Settings.SettingNotFoundException e) {
                     e.printStackTrace();
+                    Log.e("LOGTAG","Send Request Exception");
                 }
             }
         });
@@ -126,6 +120,7 @@ public class RequestAmbulance extends AppCompatActivity {
 
     private void getLocation() throws Settings.SettingNotFoundException {
 
+        Log.e("LOGTAG","Send Request getLocation");
         mNumberOfInjs = numberOfInjsEditText.getText().toString();
 
         int off = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
@@ -134,27 +129,49 @@ public class RequestAmbulance extends AppCompatActivity {
 //            Toast.makeText(this, "Location must be turned On!", Toast.LENGTH_SHORT).show();
 //            startActivity(onGPS)
             Utilites.displayLocationSettingsRequest(context,RequestAmbulance.this);
+            Log.e("LOGTAG","Send Request Location Off");
 
                 }
-        else
+        else {
+            Log.e("LOGTAG","Send Request Request Location");
             requestLocation();
+        }
 
         }
 
     private void requestLocation()
     {
 
+        Log.e("LOGTAG","Send Request Inside Request Location");
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(RequestAmbulance.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(RequestAmbulance.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(RequestAmbulance.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_LOCATION);
             return;
         }
+
+        Log.e("LOGTAG","Send Request Location Manager");
 
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
         mProgressDialog.show();
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    requestLocation();
+                } else
+                    return;
+            }
+        }
+    }
 
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
@@ -164,6 +181,7 @@ public class RequestAmbulance extends AppCompatActivity {
             request.setLatPosition(Double.toString(location.getLatitude()));
             request.setLongPosition(Double.toString(location.getLongitude()));
             request.setNumberOfInjuries(mNumberOfInjs);
+            Log.e("LOGTAG","Send Request Inside Location Listener");
             FirebaseHandler.addNewRequest(request, userEmail,new AddLatLng() {
                 @Override
                 public void onAdded() {
@@ -176,9 +194,7 @@ public class RequestAmbulance extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Faild To Add", Toast.LENGTH_SHORT).show();
                     mProgressDialog.dismiss();
                 }
-
-
-            },officeDatabase);
+            });
             if (ActivityCompat.checkSelfPermission(RequestAmbulance.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(RequestAmbulance.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 

@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         profileDrawerItem = new ProfileDrawerItem();
 
-        Intent intent = getIntent();
+//        Intent intent = getIntent();
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         getUserInfo();
 

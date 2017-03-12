@@ -23,7 +23,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,8 +34,8 @@ import com.google.firebase.storage.UploadTask;
 
 public class FirebaseHandler {
 
-    public static void addNewEmergency(final EmergencyLocation location, final AddLatLng listener) {
-        FirebaseHelper.getDatabase().getReference().child("Emergency Locations").child("userName").setValue(location).addOnCompleteListener(new OnCompleteListener<Void>() {
+    public static void addNewEmergency(final EmergencyLocation location, final AddLatLng listener) { // Not Used
+        FirebaseHelper.getDatabase().getReference().child("UserDatabase").child("Emergency Locations").child("userName").setValue(location).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
@@ -49,26 +48,16 @@ public class FirebaseHandler {
         });
     }
 
-    public static void addNewRequest(final PendingRequests request, String userEmail, final AddLatLng listener, final FirebaseDatabase officeDatabase)
+    public static void addNewRequest(final PendingRequests request, String userEmail, final AddLatLng listener)
     {
         String mEmail = userEmail.substring(0,userEmail.indexOf("@"));
         final String emailNode = mEmail.replace(".","");
 
-        FirebaseHelper.getDatabase().getReference().child("PendingRequests").child(emailNode).setValue(request).addOnCompleteListener(new OnCompleteListener<Void>() {
+        FirebaseHelper.getDatabase().getReference().child("UserRequests").child(emailNode).setValue(request).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
                     Log.v("Status", "Added successfuly");
-                    officeDatabase.getReference().child("PendingRequests").push().setValue(request).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful())
-                            {
-                                Log.v("Status", "Added successfuly");
-                                listener.onAdded();
-                            }
-                        }
-                    });
 
                 }
                 else
@@ -76,7 +65,7 @@ public class FirebaseHandler {
             }
         });
 
-        FirebaseHelper.getDatabase().getReference("allUsers").child(emailNode).child("lastRequest").setValue(request).addOnCompleteListener(new OnCompleteListener<Void>() {
+        FirebaseHelper.getDatabase().getReference().child("allUsers").child(emailNode).child("lastRequest").setValue(request).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
@@ -88,7 +77,7 @@ public class FirebaseHandler {
             }
         });
     }
-    public static void getEmergencyLocation(final GetLocationData listener)
+    public static void getEmergencyLocation(final GetLocationData listener) // Not Yet Used
     {
         FirebaseHelper.getDatabase().getReference("Emergency Locations").child("userName").addValueEventListener(new ValueEventListener() {
             @Override
@@ -112,7 +101,7 @@ public class FirebaseHandler {
         String email =useremail.substring(0,useremail.indexOf("@"));
         final String emailNode = email.replace(".","");
 
-        FirebaseHelper.getDatabase().getReference("allUsers").child(emailNode).addValueEventListener(new ValueEventListener() {
+        FirebaseHelper.getDatabase().getReference().child("allUsers").child(emailNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -148,7 +137,7 @@ public class FirebaseHandler {
 
         String email = user.getUserEmail().substring(0,user.getUserEmail().indexOf("@"));
         final String emailNode = email.replace(".","");
-        FirebaseHelper.getDatabase().getReference("allUsers").child(emailNode).setValue(user);
+        FirebaseHelper.getDatabase().getReference().child("allUsers").child(emailNode).setValue(user);
     }
 
     public static void signIn(FirebaseAuth auth, final User user, final Context context, final LoginCallBack listener)
