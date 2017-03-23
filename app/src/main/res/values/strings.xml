@@ -5,4 +5,5 @@
         <item>0020</item>
         <item>0010</item>
     </string-array>
+    <string name="title_activity_first_aid">FirstAid</string>
 </resources>

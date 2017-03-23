@@ -17,6 +17,17 @@
         android:layout_height="match_parent"
         tools:context="com.example.android.graduationdemo.MapsActivity" />
 
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/locationMarker"
+        android:src="@drawable/add_marker"
+        android:layout_gravity="center"
+        />
+
+
+
     <Button
         android:layout_width="260dp"
         android:layout_height="wrap_content"

@@ -10,11 +10,9 @@ import com.example.android.graduationdemo.User;
 import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.example.android.graduationdemo.callbacks.AddUserImage;
 import com.example.android.graduationdemo.callbacks.CheckImageExistance;
-import com.example.android.graduationdemo.callbacks.GetLocationData;
 import com.example.android.graduationdemo.callbacks.GetUserData;
 import com.example.android.graduationdemo.callbacks.LoginCallBack;
 import com.example.android.graduationdemo.callbacks.UserAvailability;
-import com.example.android.graduationdemo.data.EmergencyLocation;
 import com.example.android.graduationdemo.data.PendingRequests;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,19 +32,7 @@ import com.google.firebase.storage.UploadTask;
 
 public class FirebaseHandler {
 
-    public static void addNewEmergency(final EmergencyLocation location, final AddLatLng listener) { // Not Used
-        FirebaseHelper.getDatabase().getReference().child("UserDatabase").child("Emergency Locations").child("userName").setValue(location).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Log.v("Status", "Added successfuly");
-                    listener.onAdded();
-                }
-                else
-                    listener.onFailed(task.getException().getMessage());
-            }
-        });
-    }
+
 
     public static void addNewRequest(final PendingRequests request, String userEmail, final AddLatLng listener)
     {
@@ -77,23 +63,7 @@ public class FirebaseHandler {
             }
         });
     }
-    public static void getEmergencyLocation(final GetLocationData listener) // Not Yet Used
-    {
-        FirebaseHelper.getDatabase().getReference("Emergency Locations").child("userName").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String mLat,mLng;
 
-                EmergencyLocation emergencyLocation = dataSnapshot.getValue(EmergencyLocation.class);
-                listener.getLocationData(emergencyLocation);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 
     public static void getUserInfo(String useremail, final GetUserData listener)
     {
