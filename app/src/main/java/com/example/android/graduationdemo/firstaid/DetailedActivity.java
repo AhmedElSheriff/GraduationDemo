@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.android.graduationdemo.R;
 import com.example.android.graduationdemo.data.FirstAid;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 public class DetailedActivity extends AppCompatActivity {
 
@@ -17,7 +18,8 @@ public class DetailedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailed);
 
         ImageView imageAid = (ImageView) findViewById(R.id.image_aid);
-        TextView signAid = (TextView) findViewById(R.id.sign_aid);
+
+        ExpandableTextView signAid = (ExpandableTextView)findViewById(R.id.expandable_text_view);
         TextView cureAid = (TextView) findViewById(R.id.cure_aid);
         Intent i = getIntent();
         FirstAid firstAid= i.getParcelableExtra("data");

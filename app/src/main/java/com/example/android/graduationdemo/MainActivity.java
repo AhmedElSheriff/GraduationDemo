@@ -1,5 +1,6 @@
 package com.example.android.graduationdemo;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,9 +11,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +25,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.android.graduationdemo.Firebase.FirebaseHandler;
 import com.example.android.graduationdemo.callbacks.AddUserImage;
 import com.example.android.graduationdemo.callbacks.CheckImageExistance;
@@ -30,8 +35,8 @@ import com.example.android.graduationdemo.callbacks.GetUserData;
 import com.example.android.graduationdemo.controller.RequestAmbulance;
 import com.example.android.graduationdemo.data.EmergencyLocation;
 import com.example.android.graduationdemo.data.FirstAid;
-import com.example.android.graduationdemo.firstaid.DetailedActivity;
 import com.example.android.graduationdemo.utilities.Utilites;
+import com.example.android.graduationdemo.view.FirstAidActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,10 +49,8 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
     private Location mLocation;
     private String bestProvider;
-
+    private Toolbar toolbar;
 
     @Override
     public void onBackPressed() {
@@ -120,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Loading");
         mProgressDialog.setCancelable(false);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         mAuth = FirebaseAuth.getInstance();
@@ -161,28 +164,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         PrimaryDrawerItem requestAmbulance = new PrimaryDrawerItem().withIdentifier(1).withName("Request Ambulance").withIcon(R.drawable.requestambulance);
         PrimaryDrawerItem aboutUs = new PrimaryDrawerItem().withIdentifier(2).withName("About Us").withIcon(R.drawable.aboutusicon);
         PrimaryDrawerItem logOff = new PrimaryDrawerItem().withIdentifier(3).withName("Log Off").withIcon(R.drawable.logoff);
-        SecondaryDrawerItem title = new SecondaryDrawerItem().withName("First Aid").withSelectable(false);
+        PrimaryDrawerItem firstAid = new PrimaryDrawerItem().withIdentifier(4).withName("First Aid").withIcon(R.drawable.requestambulance);
+        //SecondaryDrawerItem title = new SecondaryDrawerItem().withName("First Aid").withSelectable(false);
+
         result = new DrawerBuilder().withActivity(this).withToolbar(toolbar).addDrawerItems(
                 requestAmbulance,
                 aboutUs,
                 logOff,
-                title,
-                new DividerDrawerItem()
-                , new SecondaryDrawerItem().withIdentifier(4).withName("Allergies").withIcon(R.drawable.allergiesicon)
-                , new SecondaryDrawerItem().withIdentifier(5).withName("Asthma Attack").withIcon(R.drawable.asthmaicon)
-                , new SecondaryDrawerItem().withIdentifier(6).withName("Bleeding").withIcon(R.drawable.bleedingicon)
-                , new SecondaryDrawerItem().withIdentifier(7).withName("Broken Bones").withIcon(R.drawable.boneicon)
-                , new SecondaryDrawerItem().withIdentifier(9).withName("Burns").withIcon(R.drawable.burnsicon)
-                , new SecondaryDrawerItem().withIdentifier(9).withName("Choking").withIcon(R.drawable.chokingicon)
-                , new SecondaryDrawerItem().withIdentifier(10).withName("Chest Pain").withIcon(R.drawable.chestpainicon)
-                , new SecondaryDrawerItem().withIdentifier(11).withName("Diabets").withIcon(R.drawable.diabetesicon)
-                , new SecondaryDrawerItem().withIdentifier(12).withName("Heading").withIcon(R.drawable.headingicon)
-                , new SecondaryDrawerItem().withIdentifier(13).withName("Heat Stroke").withIcon(R.drawable.heatstrokeicon)
-                , new SecondaryDrawerItem().withIdentifier(14).withName("Muscle Injury").withIcon(R.drawable.muscleinjuryicon)
-                , new SecondaryDrawerItem().withIdentifier(15).withName("Nose Bleeding").withIcon(R.drawable.nosebleedicon)
-                , new SecondaryDrawerItem().withIdentifier(16).withName("Poisoning").withIcon(R.drawable.poisoningicon)
-                , new SecondaryDrawerItem().withIdentifier(17).withName("Stroke").withIcon(R.drawable.strokeicon)
-                , new SecondaryDrawerItem().withIdentifier(18).withName("Unconscious").withIcon(R.drawable.unconsciousicon)
+                firstAid
+                //new DividerDrawerItem()
+//                , new SecondaryDrawerItem().withIdentifier(4).withName("Allergies").withIcon(R.drawable.allergiesicon)
+//                , new SecondaryDrawerItem().withIdentifier(5).withName("Asthma Attack").withIcon(R.drawable.asthmaicon)
+//                , new SecondaryDrawerItem().withIdentifier(6).withName("Bleeding").withIcon(R.drawable.bleedingicon)
+//                , new SecondaryDrawerItem().withIdentifier(7).withName("Broken Bones").withIcon(R.drawable.boneicon)
+//                , new SecondaryDrawerItem().withIdentifier(9).withName("Burns").withIcon(R.drawable.burnsicon)
+//                , new SecondaryDrawerItem().withIdentifier(9).withName("Choking").withIcon(R.drawable.chokingicon)
+//                , new SecondaryDrawerItem().withIdentifier(10).withName("Chest Pain").withIcon(R.drawable.chestpainicon)
+//                , new SecondaryDrawerItem().withIdentifier(11).withName("Diabets").withIcon(R.drawable.diabetesicon)
+//                , new SecondaryDrawerItem().withIdentifier(12).withName("Heading").withIcon(R.drawable.headingicon)
+//                , new SecondaryDrawerItem().withIdentifier(13).withName("Heat Stroke").withIcon(R.drawable.heatstrokeicon)
+//                , new SecondaryDrawerItem().withIdentifier(14).withName("Muscle Injury").withIcon(R.drawable.muscleinjuryicon)
+//                , new SecondaryDrawerItem().withIdentifier(15).withName("Nose Bleeding").withIcon(R.drawable.nosebleedicon)
+//                , new SecondaryDrawerItem().withIdentifier(16).withName("Poisoning").withIcon(R.drawable.poisoningicon)
+//                , new SecondaryDrawerItem().withIdentifier(17).withName("Stroke").withIcon(R.drawable.strokeicon)
+//                , new SecondaryDrawerItem().withIdentifier(18).withName("Unconscious").withIcon(R.drawable.unconsciousicon)
         )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -195,39 +200,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             MainActivity.this.finish();
                             startActivity(new Intent(MainActivity.this, SignIn.class));
                         } else if (position == 4) {
-
-                        } else if (position == 5) {
-
-                        } else if (position == 6) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(0)));
-                        } else if (position == 7) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(1)));
-                        } else if (position == 8) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(2)));
-                        } else if (position == 9) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(3)));
-                        } else if (position == 10) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(4)));
-                        } else if (position == 11) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(5)));
-                        } else if (position == 12) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(6)));
-                        } else if (position == 13) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(7)));
-                        } else if (position == 14) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(8)));
-                        } else if (position == 15) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(9)));
-                        } else if (position == 16) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(10)));
-                        } else if (position == 17) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(11)));
-                        } else if (position == 18) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(12)));
-                        } else if (position == 19) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(13)));
-                        } else if (position == 20) {
-                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(14)));
+                            startActivity(new Intent(MainActivity.this, FirstAidActivity.class));
+//                        } else if (position == 5) {
+//
+//                        } else if (position == 6) {
+//                            //startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(0)));
+//                            startActivity(new Intent(MainActivity.this, FirstAidActivity.class));
+//                        } else if (position == 7) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(1)));
+//                        } else if (position == 8) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(2)));
+//                        } else if (position == 9) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(3)));
+//                        } else if (position == 10) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(4)));
+//                        } else if (position == 11) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(5)));
+//                        } else if (position == 12) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(6)));
+//                        } else if (position == 13) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(7)));
+//                        } else if (position == 14) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(8)));
+//                        } else if (position == 15) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(9)));
+//                        } else if (position == 16) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(10)));
+//                        } else if (position == 17) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(11)));
+//                        } else if (position == 18) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(12)));
+//                        } else if (position == 19) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(13)));
+//                        } else if (position == 20) {
+//                            startActivity(new Intent(MainActivity.this, DetailedActivity.class).putExtra("data", firstAidArr.get(14)));
                         }
                         return false;
                     }
@@ -260,17 +266,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void getLocationData(EmergencyLocation emergencyLocation) {
-//        mLat = emergencyLocation.getLatPosition();
-//        mLong = emergencyLocation.getLongPosition();
-//        LatLng case2 = new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLong));
-//        if (marker!=null) {
-//            marker.remove();
-//            marker=null;
-//        }
-//
-//        if (marker==null) {
-//            marker = mMap.addMarker(new MarkerOptions().position(case2).title("My Case").icon(BitmapDescriptorFactory.fromResource(R.drawable.patient)));
-//        }
     }
 
     @Override
@@ -300,8 +295,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setBuildingsEnabled(true);
         mMap.setIndoorEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        //mMap.setPadding(0,1800,0,0);
 
 
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onMapClick(LatLng latLng) {
+
+                if(toolbar.getVisibility() == View.VISIBLE)
+                {
+                    hideToolBar();
+                    hideButton(mRequestAmb);
+                }
+                else if(toolbar.getVisibility() == View.INVISIBLE)
+                {
+                    showToolBar();
+                    showButton();
+                }
+            }
+        });
 
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
@@ -311,24 +324,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.e("mCenterLatLong = ", Double.toString(mCenterLatLong.latitude) + " " + Double.toString(mCenterLatLong.longitude));
             }
         });
-//        LatLng car1 = new LatLng(29.9540458,30.9130367);
-//        LatLng car2 = new LatLng(29.9532644,30.9134779);
-//        LatLng car3 = new LatLng(29.9555664,30.9174799);
-//        LatLng case1 = new LatLng(29.955388,30.9146463);
-//        String lattest = mLat;
-//        String longtest = mLong;
-//        // LatLng case2 = new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLong));
-//        BitmapDescriptor patient = BitmapDescriptorFactory.fromResource(R.drawable.patient);
-//        BitmapDescriptor badAmbulances = BitmapDescriptorFactory.fromResource(R.drawable.badambulance);
-//        BitmapDescriptor goodAmbulance = BitmapDescriptorFactory.fromResource(R.drawable.goodambulance);
-//        BitmapDescriptor busyAmbulances = BitmapDescriptorFactory.fromResource(R.drawable.busyambulance);
-//
-//
-//
-//        mMap.addMarker(new MarkerOptions().position(car1).title("Good Ambulance").icon(goodAmbulance));
-//        mMap.addMarker(new MarkerOptions().position(car2).title("Bad Ambulance").icon(badAmbulances));
-//        mMap.addMarker(new MarkerOptions().position(car3).title("Busy Ambulance").icon(busyAmbulances));
-//        mMap.addMarker(new MarkerOptions().position(case1).title("Patient").icon(patient));
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+
+
+                return false;
+            }
+        });
+
     }
 
 
@@ -337,9 +342,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         int off = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
         if (off == 0) {
-//            Intent onGPS = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//            Toast.makeText(this, "Location must be turned On!", Toast.LENGTH_SHORT).show();
-//            startActivity(onGPS)
             Utilites.displayLocationSettingsRequest(getApplicationContext(), MainActivity.this);
             Log.e("LOGTAG", "Send Request Location Off");
 
@@ -365,12 +367,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Log.e("LOGTAG", "Send Request Location Manager");
 
-//        if(mLocation!= null)
-//        {
-//            Log.e("mCurrentLatLong = ",Double.toString(mLocation.getLatitude()) + " " + Double.toString(mLocation.getLongitude()));
-//
-//
-//        }
+
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
@@ -389,34 +386,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
-
-//    private final LocationListener mLocationListener = new LocationListener() {
-//        @Override
-//        public void onLocationChanged(Location location) {
-//
-////            Double lat = location.getLatitude();
-////            Double lng = location.getLongitude();
-////            mCurrentLatLng = new LatLng(lat,lng);
-////            mProgressDialog.dismiss();
-////            Log.e("mCurrentLatLong = ",Double.toString(location.getLatitude()) + " " + Double.toString(location.getLongitude()));
-//
-//        }
-//
-//        @Override
-//        public void onStatusChanged(String s, int i, Bundle bundle) {
-//
-//        }
-//
-//        @Override
-//        public void onProviderEnabled(String s) {
-//
-//        }
-//
-//        @Override
-//        public void onProviderDisabled(String s) {
-//
-//        }
-//    };
 
 
     private void getUserInfo() {
@@ -452,17 +421,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         userName = user.getUserName();
-        //header.addProfiles(profileDrawerItem.withName(user.getUserName()).withEmail(user.getUserEmail())
-        //.withIcon(R.drawable.ahmedelsherif));
-
-
-//        FirebaseHandler.getUserImageFromDatabase(new GetUserImage() {
-//            @Override
-//            public void getImage(URL url) {
-//                header.addProfiles(profileDrawerItem.withName(userName).withEmail(userEmail)
-//                        .withIcon("https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Smiley.svg/800px-Smiley.svg.png"));
-//            }
-//        });
 
     }
 
@@ -798,14 +756,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        if(location != null) {
+
             double lat = location.getLatitude();
             double lng = location.getLongitude();
             LatLng latLng = new LatLng(lat, lng);
             mProgressDialog.dismiss();
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.0f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.0f));
             mLocationManager.removeUpdates(this);
-        }
+
     }
 
     @Override
@@ -820,6 +778,58 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onProviderDisabled(String provider) {
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void hideToolBar()
+    {
+        YoYo.with(Techniques.FadeOutUp)
+                .onEnd(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        toolbar.setVisibility(View.INVISIBLE);
+                    }
+                })
+                .duration(700)
+                .playOn(findViewById(R.id.toolbar));
+
+    }
+
+    private void showToolBar()
+    {
+
+        YoYo.with(Techniques.FadeInDown)
+                .onStart(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        toolbar.setVisibility(View.VISIBLE);
+                    }
+                })
+                .duration(700)
+                .playOn(findViewById(R.id.toolbar));
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void hideButton(final Button button)
+    {
+        if(button.getVisibility() == View.VISIBLE)
+        {
+            YoYo.with(Techniques.FadeOutDown)
+                    .duration(700)
+                    .playOn(findViewById(R.id.requestambbtn));
+        }
+    }
+
+    private void showButton()
+    {
+
+                    YoYo.with(Techniques.FadeInUp)
+                            .duration(700)
+                            .playOn(findViewById(R.id.requestambbtn));
+
+
 
     }
 }

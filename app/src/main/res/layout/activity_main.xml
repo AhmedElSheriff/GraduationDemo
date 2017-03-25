@@ -4,7 +4,6 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:gravity="center"
     tools:context="com.example.android.graduationdemo.MainActivity">
 
@@ -25,6 +24,8 @@
         android:src="@drawable/add_marker"
         android:layout_gravity="center"
         />
+
+
 
 
 

@@ -7,20 +7,17 @@
 
     >
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
 
-        <ProgressBar
-            android:id="@+id/sign_up_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/edit_area"
             android:orientation="vertical">
 
             <ImageView
@@ -153,9 +150,6 @@
             </android.support.design.widget.TextInputLayout>
 
 
-
-
-
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -185,28 +179,42 @@
                 </RadioGroup>
 
 
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            >
 
-
-
-
-            <Button
-                android:id="@+id/signup_btn"
+            <com.andexert.library.RippleView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="16dp"
-                android:onClick="signUp"
-                android:text="Sign up"
-                android:textStyle="bold"
+                android:id="@+id/ripple_view"
+                >
+
+            <com.dd.CircularProgressButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/circlesignupbtn"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="34dp"
+                android:layout_marginRight="34dp"
                 android:textAllCaps="false"
-                android:background="@color/colorAccent"
-
+                app:cpb_cornerRadius="48dp"
+                app:cpb_iconComplete="@drawable/ic_action_accept"
+                app:cpb_iconError="@drawable/ic_action_cancel"
+                app:cpb_textIdle="Sign up"
+                android:textColor="#ffffff"
+                app:cpb_selectorIdle="@drawable/state_selector"
                 />
-
+            </com.andexert.library.RippleView>
 
         </LinearLayout>
-    </FrameLayout>
+
+    </LinearLayout>
 
 </ScrollView>
 

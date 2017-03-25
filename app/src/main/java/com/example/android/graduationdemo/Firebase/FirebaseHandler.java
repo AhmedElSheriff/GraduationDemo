@@ -122,7 +122,6 @@ public class FirebaseHandler {
                 }
 
                 else {
-                    Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
                     Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     listener.onFail();
                 }
