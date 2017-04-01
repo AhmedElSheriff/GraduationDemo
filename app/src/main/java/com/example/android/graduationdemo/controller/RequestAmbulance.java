@@ -14,8 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.android.graduationdemo.Firebase.FirebaseHandler;
-import com.example.android.graduationdemo.MainActivity;
+import com.example.android.graduationdemo.firebase.FirebaseHandler;
 import com.example.android.graduationdemo.R;
 import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.example.android.graduationdemo.data.PendingRequests;

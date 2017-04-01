@@ -1,4 +1,4 @@
-package com.example.android.graduationdemo;
+package com.example.android.graduationdemo.data;
 
 /**
  * Created by Abshafi on 1/24/2017.
@@ -11,7 +11,15 @@ public class User {
     private String userName;
     private String phoneNumber;
     private String userGender;
+    private String isDriver;
 
+    public void setIsDriver(String isUser) {
+        this.isDriver = isUser;
+    }
+
+    public String getIsDriver() {
+        return isDriver;
+    }
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;

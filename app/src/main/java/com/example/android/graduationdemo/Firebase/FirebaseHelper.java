@@ -1,4 +1,4 @@
-package com.example.android.graduationdemo.Firebase;
+package com.example.android.graduationdemo.firebase;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

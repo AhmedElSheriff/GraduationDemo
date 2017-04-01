@@ -1,7 +1,9 @@
-package com.example.android.graduationdemo;
+package com.example.android.graduationdemo.controller;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.android.graduationdemo.R;
 
 public class AboutUs extends AppCompatActivity {
 

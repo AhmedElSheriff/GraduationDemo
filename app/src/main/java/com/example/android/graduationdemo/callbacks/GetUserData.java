@@ -1,6 +1,6 @@
 package com.example.android.graduationdemo.callbacks;
 
-import com.example.android.graduationdemo.User;
+import com.example.android.graduationdemo.data.User;
 
 /**
  * Created by Abshafi on 1/25/2017.

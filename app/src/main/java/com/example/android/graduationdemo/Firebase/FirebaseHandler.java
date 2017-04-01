@@ -1,4 +1,4 @@
-package com.example.android.graduationdemo.Firebase;
+package com.example.android.graduationdemo.firebase;
 
 import android.content.Context;
 import android.net.Uri;
@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.android.graduationdemo.User;
+import com.example.android.graduationdemo.data.User;
 import com.example.android.graduationdemo.callbacks.AddLatLng;
 import com.example.android.graduationdemo.callbacks.AddUserImage;
 import com.example.android.graduationdemo.callbacks.CheckImageExistance;

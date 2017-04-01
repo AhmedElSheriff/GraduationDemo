@@ -22,10 +22,12 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="android.support.multidex.MultiDexApplication"
+        >
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:name=".controller.MainActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -42,7 +44,7 @@
 
         <activity android:name=".controller.RequestAmbulance" />
         <activity
-            android:name=".SignIn"
+            android:name=".controller.SignIn"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,15 +53,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignUp"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".AboutUs" />
+            android:name=".controller.SignUp"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".controller.AboutUs" />
         <activity
-            android:name=".firstaid.DetailedActivity"
+            android:name=".controller.DetailedActivity"
             android:label="@string/title_activity_first_aid"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".view.FirstAidActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity android:name=".controller.FirstAidActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             />
 
     </application>

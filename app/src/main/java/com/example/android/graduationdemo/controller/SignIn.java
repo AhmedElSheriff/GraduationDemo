@@ -1,7 +1,6 @@
-package com.example.android.graduationdemo;
+package com.example.android.graduationdemo.controller;
 
 import android.animation.Animator;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +12,10 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.dd.CircularProgressButton;
-import com.example.android.graduationdemo.Firebase.FirebaseHandler;
+import com.example.android.graduationdemo.R;
 import com.example.android.graduationdemo.callbacks.LoginCallBack;
+import com.example.android.graduationdemo.data.User;
+import com.example.android.graduationdemo.firebase.FirebaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -40,15 +41,11 @@ public class SignIn extends AppCompatActivity implements Validator.ValidationLis
 
     private FirebaseAuth mAuth;
     private User user;
-    private ProgressDialog mProgressDialog;
     private CircularProgressButton mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Please Wait");
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             startActivity(new Intent(SignIn.this, MainActivity.class));
@@ -91,14 +88,12 @@ public class SignIn extends AppCompatActivity implements Validator.ValidationLis
 
                     @Override
                     public void onLoggedIn() {
-                        mProgressDialog.dismiss();
                         animateSuccess();
                         mButton.setProgress(100);
                     }
 
                     @Override
                     public void onFail() {
-                        mProgressDialog.dismiss();
                         animateError();
                         mButton.setProgress(-1);
                     }
@@ -106,7 +101,6 @@ public class SignIn extends AppCompatActivity implements Validator.ValidationLis
                 }
                 else
                 {
-                    mProgressDialog.dismiss();
                     animateError();
                     mButton.setProgress(-1);
                 }
@@ -115,8 +109,8 @@ public class SignIn extends AppCompatActivity implements Validator.ValidationLis
     }
 
     private void setUserInfo() {
-        user.setUserEmail(mEmail.getText().toString());
-        user.setUserPassword(mPassword.getText().toString());
+        user.setUserEmail(mEmail.getText().toString().trim());
+        user.setUserPassword(mPassword.getText().toString().trim());
     }
 
     @Override

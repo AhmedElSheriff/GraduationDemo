@@ -1,4 +1,4 @@
-package com.example.android.graduationdemo;
+package com.example.android.graduationdemo.controller;
 
 import android.animation.Animator;
 import android.content.Intent;
@@ -15,7 +15,9 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.dd.CircularProgressButton;
-import com.example.android.graduationdemo.Firebase.FirebaseHandler;
+import com.example.android.graduationdemo.firebase.FirebaseHandler;
+import com.example.android.graduationdemo.R;
+import com.example.android.graduationdemo.data.User;
 import com.example.android.graduationdemo.callbacks.LoginCallBack;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mobsandgeeks.saripaar.ValidationError;
@@ -133,6 +135,7 @@ public class SignUp extends AppCompatActivity implements Validator.ValidationLis
         if(selectedId != -1) {
             user.setUserGender(mRadionBtn.getText().toString());
         }
+        user.setIsDriver("false");
     }
 
     @Override
